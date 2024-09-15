@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: fardousabuzaid/frontend-image:latest
+    ports:
+      - "4201:80" 
+    depends_on:
+      - backend
+    networks:
+      - scheduler-network
+
+  backend:
+    image: fardousabuzaid/scheduler-manager-backend
+    ports:
+      - "8080:8080" 
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/scheduler_manager_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Fardous195
+    depends_on:
+      - mysql
+    networks:
+      - scheduler-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Fardous195
+      MYSQL_DATABASE: scheduler_manager_db
+    ports:
+      - "3307:3306" 
+    networks:
+      - scheduler-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 30s
+      retries: 5
+
+
+
+networks:
+  scheduler-network:
+    driver: bridge
