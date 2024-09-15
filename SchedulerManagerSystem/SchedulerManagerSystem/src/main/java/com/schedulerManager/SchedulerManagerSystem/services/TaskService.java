@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 @Service
 public class TaskService {
 
+    // Logger for logging messages and errors
     private static final Logger LOGGER = Logger.getLogger(ReportService.class.getName());
 
     @Autowired
@@ -30,14 +31,33 @@ public class TaskService {
     @Autowired
     private ReportService reportService;
 
+    /**
+     * Retrieves a list of all tasks from the task repository.
+     * 
+     * @return a list of all tasks
+     */
     public List<Task> getAllTasks(){
       return taskRepository.findAll();
     }
 
+     /**
+     * Retrieves a task by its ID.
+     * 
+     * @param id the task ID
+     * @return an optional containing the task if found, otherwise empty
+     */
     public Optional<Task> getTaskById(Long id){
         return taskRepository.findById(id);
     }
 
+      /**
+     * Adds a new task to the repository and schedules it for execution.
+     * Validates the task before saving to ensure no overlaps with existing tasks.
+     * 
+     * @param task the task to be added
+     * @return the saved task
+     * @throws IllegalArgumentException if the task overlaps with existing tasks
+     */
     public Task addTask(Task task) {
         if (taskValidationService.isTaskValid(task)) {
             Task savedTask = taskRepository.save(task);
@@ -49,11 +69,24 @@ public class TaskService {
             throw new IllegalArgumentException("Task overlaps with existing tasks");
         }
     }
+
+      /**
+     * Updates an existing task in the repository.
+     * 
+     * @param id the ID of the task to be updated
+     * @param task the task data to update
+     * @return the updated task wrapped in a ResponseEntity
+     */
     public ResponseEntity<Task> updateTask(Long id, Task task) {
         task.setId(id);
         return ResponseEntity.ok(taskRepository.save(task));
     }
 
+     /**
+     * Schedules a task to be executed at its start and end times using the report service.
+     * 
+     * @param task the task to be scheduled
+     */
     public void scheduleTask(Task task) {
         LocalDateTime startTime = task.getStartTime();
         LocalDateTime endTime = task.getEndTime();
@@ -67,7 +100,10 @@ public class TaskService {
         }
     }
 
-    // Handle missed tasks after system restarts
+     /**
+     * Handles any tasks that were missed while the system was down or restarted.
+     * It checks for tasks that should have been executed in the past and logs or schedules them accordingly.
+     */   
     public void handleMissedTasks(){
         LocalDateTime now = LocalDateTime.now();
         // Fetch tasks that need to be executed
