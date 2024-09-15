@@ -1,0 +1,18 @@
+<div class="container mt-4">
+    <h2>Reports</h2>
+    <table class="table table-bordered mt-4">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Message</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let report of reports">
+          <td>{{ report.time }}</td>
+          <td>{{ report.message }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

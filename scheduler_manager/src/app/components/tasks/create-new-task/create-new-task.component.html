@@ -1,0 +1,123 @@
+<div class="container mt-5">
+  <h2>Start time and Occurrences</h2>
+  <form #taskForm="ngForm" (ngSubmit)="onSubmit(taskForm)">
+    <div class="form-group">
+      <div class="row mt-3">
+        <label for="startDate">Enter a date range</label>
+        <div class="col">
+          <div class="input-group">
+            <input
+              type="date"
+              id="startDate"
+              name="startDate"
+              [(ngModel)]="formData.startDate"
+              class="form-control"
+            />
+          </div>
+        </div>
+        <div class="col">
+          <input
+            type="date"
+            id="endDate"
+            name="endDate"
+            [(ngModel)]="formData.endDate"
+            class="form-control"
+          />
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <input
+              type="number"
+              id="startHour"
+              name="startHour"
+              [(ngModel)]="formData.startHour"
+              class="form-control"
+              placeholder="HH"
+              min="0"
+              max="23"
+            />
+            <input
+              type="number"
+              id="startMinute"
+              name="startMinute"
+              [(ngModel)]="formData.startMinute"
+              class="form-control"
+              placeholder="MM"
+              min="0"
+              max="59"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="duration">Duration</label>
+      <div class="input-group">
+        <input
+          type="number"
+          id="duration"
+          name="duration"
+          [(ngModel)]="formData.duration"
+          class="form-control"
+          min="1"
+          required
+        />
+        <div class="input-group-append">
+          <span class="input-group-text">minutes</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="me-4">Frequency</label>
+      <div class="form-check ml-3">
+        <input
+          type="radio"
+          id="daily"
+          name="frequency"
+          [(ngModel)]="formData.frequency"
+          value="daily"
+          class="form-check-input"
+          checked
+        />
+        <label for="daily" class="form-check-label">Daily</label>
+      </div>
+      <div class="form-check ml-3">
+        <input
+          type="radio"
+          id="weekly"
+          name="frequency"
+          [(ngModel)]="formData.frequency"
+          value="weekly"
+          class="form-check-input"
+        />
+        <label for="weekly" class="form-check-label">Weekly</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="repeatInterval">Repeat every</label>
+      <div class="input-group">
+        <input
+          type="number"
+          id="repeatInterval"
+          name="repeatInterval"
+          [(ngModel)]="formData.repeatInterval"
+          class="form-control"
+          min="0"
+        />
+        <div class="input-group-append">
+          <span class="input-group-text">days</span>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-4">
+      {{ isEditMode ? "Update Task" : "Create Task" }}
+    </button>
+  </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

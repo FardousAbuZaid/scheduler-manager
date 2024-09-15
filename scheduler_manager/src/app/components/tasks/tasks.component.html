@@ -1,0 +1,35 @@
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+/>
+<div class="container">
+  <h1>Tasks</h1>
+  <button
+    type="button"
+    class="btn btn-primary mb-2"
+    [routerLink]="['/create-new-task']"
+    routerLinkActive="active"
+  >
+    Create New Task
+  </button>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th scope="col">Task ID</th>
+        <th scope="col">Start Time</th>
+        <th scope="col">End Time</th>
+        <th scope="col">Duration</th>
+        <th scope="col">Edit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let task of tasks">
+        <td>{{task.id}}</td>
+        <td>{{task.startTime}}</td>
+        <td>{{task.endTime}}</td>
+        <td>{{task.duration}}</td>
+        <td><button class="btn btn-link" (click)="editTask(task.id)">Edit</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
