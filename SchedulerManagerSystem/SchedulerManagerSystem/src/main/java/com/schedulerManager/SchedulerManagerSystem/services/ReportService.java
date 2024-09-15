@@ -38,26 +38,43 @@ public class ReportService {
     @Autowired
     private  TaskRepository taskRepository;
 
+      /**
+     * Retrieves all reported tasks and updates the report if necessary.
+     * 
+     * @return a list of all reports
+     */
     public List<Report> getAllReportedTasks(){
         checkAndUpdateTasks();
         return reportRepository.findAll();
     }
 
+     /**
+     * Checks the tasks against the current time and updates the report with start and end logs.
+     * This method is called to ensure that task logs are created if tasks have started or ended.
+     */
     @Transactional
     public void checkAndUpdateTasks(){
         LocalDateTime now = LocalDateTime.now();
         List<Task> tasks = taskRepository.findAll();
 
         for(Task task: tasks){
+            // Log task start if the current time is within the task's duration
             if(task.getStartTime().isBefore(now) && task.getEndTime().isAfter(now)){
                 logTaskStart(task.getId());
             }
+            // Log task end if the current time is after the task's end time
            else if (task.getEndTime().isBefore(now)) { 
                 logTaskEnd(task.getId());
             }
         }
     }
-
+    
+   /**
+     * Creates a log entry for a task.
+     * 
+     * @param taskLog the report to be saved
+     * @return a response entity indicating success or failure
+     */
     public ResponseEntity<String> createLog( Report taskLog) {
         try {
             reportRepository.save(taskLog);
@@ -67,8 +84,17 @@ public class ReportService {
             return ResponseEntity.status(500).body("Error saving log");
         }
     }
-
+    
+   /**
+     * Schedules tasks with Quartz Scheduler.
+     * 
+     * @param taskName the task ID
+     * @param startTime the start time of the task
+     * @param endTime the end time of the task
+     * @throws SchedulerException if there is an issue scheduling the job
+     */
     public void schedulerTask(Long taskName, LocalDateTime startTime,  LocalDateTime endTime) throws SchedulerException {
+       // Schedule a job to trigger at the task's start time
        JobDetail jobDetail = JobBuilder.newJob(TaskJob.class)
                 .withIdentity(taskName + "-start")
                 .build();
@@ -78,6 +104,7 @@ public class ReportService {
                 .build();
         scheduler.scheduleJob(jobDetail, startTrigger);
 
+        // Schedule a job to trigger at the task's end time
         JobDetail endJobDetail = JobBuilder.newJob(TaskJob.class)
                 .withIdentity(taskName + "-end")
                 .build();
@@ -88,6 +115,11 @@ public class ReportService {
         scheduler.scheduleJob(endJobDetail, endTrigger);
     }
 
+     /**
+     * Logs when a task starts, if not already logged.
+     * 
+     * @param taskId the ID of the task that started
+     */
     public void logTaskStart(Long taskId) {
         if (!reportExists(taskId, "started")) {
             Report log = new Report();
@@ -99,6 +131,11 @@ public class ReportService {
         }
     }
 
+    /**
+     * Logs when a task ends, if not already logged.
+     * 
+     * @param taskId the ID of the task that ended
+     */
     public void logTaskEnd(Long taskId) {
         if (!reportExists(taskId, "ended")) {
             Report log = new Report();
